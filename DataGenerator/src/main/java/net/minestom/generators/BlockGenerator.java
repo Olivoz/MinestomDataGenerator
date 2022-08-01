@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -132,6 +133,15 @@ public final class BlockGenerator extends DataGenerator {
         appendState(blockJson, state, "interactionShape", blockState.getInteractionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).toAabbs().toString(), String.class);
         appendState(blockJson, state, "occlusionShape", blockState.getOcclusionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).toAabbs().toString(), String.class);
         appendState(blockJson, state, "visualShape", blockState.getVisualShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO, CollisionContext.empty()).toAabbs().toString(), String.class);
+        //Sounds
+        JsonObject sounds = new JsonObject();
+        SoundType soundType = blockState.getSoundType();
+        JsonObject blockJsonSounds = blockJson != null && blockJson.has("sounds") ? blockJson.getAsJsonObject("sounds") : null;
+        appendState(blockJsonSounds, sounds, "break", soundType.getBreakSound().getLocation().toString(), "minecraft:block.stone.break", String.class);
+        appendState(blockJsonSounds, sounds, "fall", soundType.getFallSound().getLocation().toString(), "minecraft:block.stone.fall", String.class);
+        appendState(blockJsonSounds, sounds, "hit", soundType.getHitSound().getLocation().toString(), "minecraft:block.stone.hit", String.class);
+        appendState(blockJsonSounds, sounds, "place", soundType.getPlaceSound().getLocation().toString(), "minecraft:block.stone.place", String.class);
+        if(sounds.size() > 0) state.add("sounds", sounds);
     }
 
     private <T> void appendState(JsonObject main, JsonObject state, String key, T value, T defaultValue, Class<T> valueType) {
